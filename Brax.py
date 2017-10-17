@@ -60,11 +60,11 @@ def main():
             print(str(dcount) + " publisher data for source " + source + " account id " + cid + " done")
             #ads data
             ajsonResponse = getdata("/v1/reports/sections?source="+source+"&source_account_id="+cid+dates)
-            for asai in ajsonResponse['results']:
-                try:
+            try:
+                for asai in ajsonResponse['results']:
                     acsvwriter.writerow([cid,asai['source_campaign_id'],asai['source_campaign_id'],asai['source_publisher_id'],asai['source_section_id'],asai['publisher_name'],asai['name'],asai['ctr'],asai['ecpc'],asai['cost'],asai['cpa'],asai['icr']])    
-                except KeyError:
-                    print("sections unavailable for source " + source + " account id " + cid)
+            except KeyError:
+                print("sections unavailable for source " + source + " account id " + cid)
             print(str(dcount) + " ads data for source " + source + " account id " + cid + " done")
         dcount = dcount + 1
 
