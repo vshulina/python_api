@@ -1,10 +1,9 @@
 import http.client, json, csv, math, datetime
+from collections import deque
 
-def main():
-    print("started at " + str(datetime.datetime.now()))
-    
+def main():    
     #create file and csv writer objects
-    hfile = open('Headers.csv','a', newline='', encoding='utf-8')
+    hfile = open('Headers_.csv','w', newline='', encoding='utf-8')
     cfile = open('BraxCampaigns.csv', 'a', newline='', encoding='utf-8')
     pfile = open('BraxPublishers.csv', 'a', newline='', encoding='utf-8')
     afile = open('BraxAds.csv', 'a', newline='', encoding='utf-8')
@@ -15,16 +14,20 @@ def main():
     
     #create headers in csv files
     hcsvwriter.writerow(['x-request-id', 'request string'])
-    #ccsvwriter.writerow(['date','source','source account id', 'source campaign id', 'campaign name', 'ctr', 'ecpc', 'cost', 'cpa', 'icr'])
-    #pcsvwriter.writerow(['date','source','source account id', 'source campaign id', 'source publisher id', 'publisher name', 'ctr', 'ecpc', 'cost', 'cpa', 'icr'])
-    #acsvwriter.writerow(['date','source','source account id', 'source campaign id', 'source publisher id', 'source section id', 'publisher name', 'section name', 'ctr', 'ecpc', 'cost', 'cpa', 'icr'])
+    ccsvwriter.writerow(['date','source','source account id', 'source campaign id', 'campaign name', 'ctr', 'ecpc', 'cost', 'cpa', 'icr'])
+    pcsvwriter.writerow(['date','source','source account id', 'source campaign id', 'source publisher id', 'publisher name', 'ctr', 'ecpc', 'cost', 'cpa', 'icr'])
+    acsvwriter.writerow(['date','source','source account id', 'source campaign id', 'source publisher id', 'source section id', 'publisher name', 'section name', 'ctr', 'ecpc', 'cost', 'cpa', 'icr'])
 
     #get account ids
     jsonResponse = getdata("/v1/accounts", hcsvwriter)
     campaigns = []
     source_account_ids = []
     sources = []
-    start_date = datetime.date(2017, 7, 27)
+
+    #set date ranges
+    last_date = get_last_date('BraxAds.csv').split('/')
+    start_date = datetime.date(int(last_date[2]), int(last_date[0]), int(last_date[1])+1)
+    #start_date = datetime.date(2017,7,27) #manual date input
     end_date = datetime.date.today() - datetime.timedelta(days=1)
     day_count = (end_date - start_date).days + 1
 
@@ -79,8 +82,6 @@ def main():
                     print("sections unavailable for source " + source + " account id " + cid)
                 print(str(d) + " ads data for source " + source + " account id " + cid + " done")
 
-    print("ended at " + str(datetime.datetime.now()))
-
 #requests data, returns in json format, records request id
 def getdata(getstring, writer):
     conn = http.client.HTTPSConnection("api.brax.io")
@@ -96,5 +97,21 @@ def getdata(getstring, writer):
     jsonResponse = json.loads(data)
     return jsonResponse
 
+#gets latest date from file
+def get_last_date(csv_filename):
+    with open(csv_filename, 'r', encoding='utf-8') as f:
+        try:
+            lastrow = deque(csv.reader(f), 1)[0]
+        except IndexError:  # empty file
+            lastrow = None
+        return lastrow[0]
+
 if __name__ == '__main__':
+    script_start = datetime.datetime.now()
+    print("started at " + str(script_start))
     main()
+    #how long did script take
+    script_end = datetime.datetime.now()
+    script_diff = script_end - script_start
+    print("started at " + str(script_end))
+    print("script took " + str(round(script_diff.total_seconds())) + " seconds")
