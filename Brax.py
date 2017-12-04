@@ -3,7 +3,7 @@ from collections import deque
 
 def main():    
     #create file and csv writer objects
-    hfile = open('Headers_.csv','w', newline='', encoding='utf-8')
+    hfile = open('Headers.csv','w', newline='', encoding='utf-8')
     cfile = open('BraxCampaigns.csv', 'a', newline='', encoding='utf-8')
     pfile = open('BraxPublishers.csv', 'a', newline='', encoding='utf-8')
     afile = open('BraxAds.csv', 'a', newline='', encoding='utf-8')
@@ -14,9 +14,10 @@ def main():
     
     #create headers in csv files
     hcsvwriter.writerow(['x-request-id', 'request string'])
-    ccsvwriter.writerow(['date','source','source account id', 'source campaign id', 'campaign name', 'ctr', 'ecpc', 'cost', 'cpa', 'icr'])
-    pcsvwriter.writerow(['date','source','source account id', 'source campaign id', 'source publisher id', 'publisher name', 'ctr', 'ecpc', 'cost', 'cpa', 'icr'])
-    acsvwriter.writerow(['date','source','source account id', 'source campaign id', 'source publisher id', 'source section id', 'publisher name', 'section name', 'ctr', 'ecpc', 'cost', 'cpa', 'icr'])
+    #not needed after initial load
+    #ccsvwriter.writerow(['date','source','source account id', 'source campaign id', 'campaign name', 'ctr', 'ecpc', 'cost', 'cpa', 'icr'])
+    #pcsvwriter.writerow(['date','source','source account id', 'source campaign id', 'source publisher id', 'publisher name', 'ctr', 'ecpc', 'cost', 'cpa', 'icr'])
+    #acsvwriter.writerow(['date','source','source account id', 'source campaign id', 'source publisher id', 'source section id', 'publisher name', 'section name', 'ctr', 'ecpc', 'cost', 'cpa', 'icr'])
 
     #get account ids
     jsonResponse = getdata("/v1/accounts", hcsvwriter)
@@ -25,8 +26,9 @@ def main():
     sources = []
 
     #set date ranges
-    last_date = get_last_date('BraxAds.csv').split('/')
-    start_date = datetime.date(int(last_date[2]), int(last_date[0]), int(last_date[1])+1)
+    last_date = get_last_date('BraxAds.csv').split('-')
+    start_date = datetime.date(int(last_date[0]), int(last_date[1]), int(last_date[2])+1)
+    print("starting from " + str(start_date))
     #start_date = datetime.date(2017,7,27) #manual date input
     end_date = datetime.date.today() - datetime.timedelta(days=1)
     day_count = (end_date - start_date).days + 1

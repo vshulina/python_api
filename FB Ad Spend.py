@@ -21,9 +21,9 @@ def main():
     FacebookAdsApi.init(access_token=access_token)
 
     #set date ranges
-    last_date = get_last_date('FB Ad Spend.csv').split('/')
-    start_date = datetime.date(2017, 11, 17)
-    start_date = datetime.date(int(last_date[2]), int(last_date[0]), int(last_date[1])+1)
+    last_date = get_last_date('FB Ad Spend.csv').split('-')
+    #start_date = datetime.date(2017, 9, 22) #manually set start date
+    start_date = datetime.date(int(last_date[0]), int(last_date[1]), int(last_date[2])+1)
     end_date = datetime.date.today() - datetime.timedelta(days=1)
     day_count = (end_date - start_date).days + 1
 
